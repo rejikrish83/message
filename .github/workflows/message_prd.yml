@@ -48,5 +48,4 @@ jobs:
           context: .  # Path to the directory containing your Dockerfile
           file: ./Dockerfile  # Path to your Dockerfile
           tags: ${{ secrets.ECRURI }}:latest
-      env:
-        DOCKER_BUILDKIT: 1
+      
