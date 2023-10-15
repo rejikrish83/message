@@ -17,7 +17,7 @@ jobs:
       - name: Run a one-line script
         uses: actions/checkout@v3
       - name: Making resource folder in src folder
-        uses: mkdir -p src/main/resources
+        uses: mkdir src/main/resources
         
       - name: Generate application.properties
         run: |
