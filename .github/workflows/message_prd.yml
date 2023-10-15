@@ -44,6 +44,9 @@ jobs:
         
       - name: Clear Docker credentials
         run: docker logout
+      - name: Log in to Amazon ECR
+        run: aws ecr get-login-password --region ${{ secrets.REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECRURI }}
+
         
       - name: Build and push Docker image to ECR
         uses: docker/build-push-action@v2
@@ -52,4 +55,5 @@ jobs:
           file: ./Dockerfile  # Path to your Dockerfile
           tags: ${{ secrets.ECRURI }}:latest
           push: true
+          build-args: NO_CACHE=1
       
