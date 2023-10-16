@@ -10,10 +10,10 @@ variable "cross_account_accountid" {
 
 variable "region" {
   type    = string
-  default = "us-west-2"
+  default = "eu-north-1"
 }
 
 variable "sns_topic_name" {
   type    = string
-  default = "CCP_Oneclick_SNS"
+  default = "Message_Contactus_SNS"
 }

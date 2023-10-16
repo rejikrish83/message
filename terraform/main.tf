@@ -1,22 +1,19 @@
-provider "aws" {
-  region = "us-east-1"  # Change to your desired AWS region
-}
 
-resource "aws_vpc" "example" {
+resource "aws_vpc" "messageapp" {
   cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_subnet" "example" {
+resource "aws_subnet" "messageapp" {
   count             = 2
-  vpc_id            = aws_vpc.example.id
+  vpc_id            = aws_vpc.messageapp.id
   cidr_block        = "10.0.1.${count.index * 2}.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "eu-north-1"
 }
 
-resource "aws_security_group" "example" {
-  name_prefix = "example-"
+resource "aws_security_group" "messageapp" {
+  name_prefix = "messageapp-"
   description = "Allow incoming traffic"
-  vpc_id      = aws_vpc.example.id
+  vpc_id      = aws_vpc.messageapp.id
 
   egress {
     from_port   = 0
@@ -26,15 +23,15 @@ resource "aws_security_group" "example" {
   }
 }
 
-resource "aws_ecs_cluster" "example" {
-  name = "example-cluster"
+resource "aws_ecs_cluster" "messageapp" {
+  name = "messageapp-cluster"
 }
 
-resource "aws_ecs_task_definition" "example" {
-  family                   = "example-task"
+resource "aws_ecs_task_definition" "messageapp" {
+  family                   = "messageapp-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = aws_iam_role.example.arn
+  execution_role_arn       = aws_iam_role.messageapp.arn
 
   cpu = "256"    # Adjust based on your application's requirements
   memory = "512" # Adjust based on your application's requirements
@@ -42,8 +39,8 @@ resource "aws_ecs_task_definition" "example" {
   container_definitions = <<DEFINITION
   [
     {
-      "name": "example-container",
-      "image": "your-ecr-repository-url/your-spring-boot-app:latest",
+      "name": "messageapp-container",
+      "image": "470502905291.dkr.ecr.eu-north-1.amazonaws.com/message-app:latest",
       "memory": 512,
       "cpu": 256,
       "essential": true,
@@ -58,14 +55,14 @@ resource "aws_ecs_task_definition" "example" {
   DEFINITION
 }
 
-resource "aws_iam_role" "example" {
-  name = "example-task-execution-role"
+resource "aws_iam_role" "messageapp" {
+  name = "messageapp-task-execution-role"
 }
 
-resource "aws_iam_policy" "example" {
-  name = "example-task-policy"
+resource "aws_iam_policy" "messageapp" {
+  name = "messageapp-task-policy"
 
-  description = "Example Task Policy"
+  description = "messageapp Task Policy"
 
   policy = <<EOF
 {
@@ -97,37 +94,37 @@ resource "aws_iam_policy" "example" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "example" {
-  policy_arn = aws_iam_policy.example.arn
-  role       = aws_iam_role.example.name
+resource "aws_iam_role_policy_attachment" "messageapp" {
+  policy_arn = aws_iam_policy.messageapp.arn
+  role       = aws_iam_role.messageapp.name
 }
 
-resource "aws_iam_instance_profile" "example" {
-  name = "example-instance-profile"
+resource "aws_iam_instance_profile" "messageapp" {
+  name = "messageapp-instance-profile"
 
-  role = aws_iam_role.example.name
+  role = aws_iam_role.messageapp.name
 }
 
-resource "aws_ecs_service" "example" {
-  name            = "example-service"
-  cluster         = aws_ecs_cluster.example.id
-  task_definition = aws_ecs_task_definition.example.arn
+resource "aws_ecs_service" "messageapp" {
+  name            = "messageapp-service"
+  cluster         = aws_ecs_cluster.messageapp.id
+  task_definition = aws_ecs_task_definition.messageapp.arn
   launch_type     = "FARGATE"
   network_configuration {
-    subnets = aws_subnet.example[*].id
-    security_groups = [aws_security_group.example.id]
+    subnets = aws_subnet.messageapp[*].id
+    security_groups = [aws_security_group.messageapp.id]
   }
-  depends_on      = [aws_ecs_task_definition.example]
+  depends_on      = [aws_ecs_task_definition.messageapp]
 }
 
-resource "aws_ecs_capacity_provider" "example" {
-  name              = "example-capacity-provider"
+resource "aws_ecs_capacity_provider" "messageapp" {
+  name              = "messageapp-capacity-provider"
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.example.arn
+    auto_scaling_group_arn = aws_autoscaling_group.messageapp.arn
     managed_termination_protection = "DISABLED"
   }
   enable_ecs_managed_tags = true
   tags = {
-    Name = "example-capacity-provider"
+    Name = "messageapp-capacity-provider"
   }
 }

@@ -7,6 +7,6 @@ terraform {
     encrypt        = true
     key            = "message-contactus/terraform.tfstate"
     region         = "eu-north-1	"
-    dynamodb_table = "message-contactus-tfstate"
+    dynamodb_table = "messagingApp"
   }
 }
