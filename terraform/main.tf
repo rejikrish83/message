@@ -138,6 +138,7 @@ resource "aws_ecs_service" "messageapp" {
   cluster         = aws_ecs_cluster.messageapp.id
   task_definition = aws_ecs_task_definition.messageapp.arn
   launch_type     = "FARGATE"
+  desired_count   = 2
   network_configuration {
     subnets = aws_subnet.messageapp[*].id
     security_groups = [aws_security_group.messageapp.id]
