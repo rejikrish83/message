@@ -7,7 +7,7 @@ terraform {
   	bucket         = "messageappbucket"
     encrypt        = true
     key            = "messageappbucket/terraform.tfstate"
-    region         = "eu-north-1	"
+    region         = "eu-north-1"
     dynamodb_table = "messagingApp"
   }
 }
