@@ -22,6 +22,15 @@ resource "aws_security_group" "messageapp" {
   }
 }
 
+resource "aws_security_group_rule" "messageapp" {
+  type        = "ingress"
+  from_port   = 8080
+  to_port     = 8080
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.messageapp.id
+}
+
 resource "aws_ecs_cluster" "messageapp" {
   name = "messageapp-cluster"
 }
@@ -31,6 +40,7 @@ resource "aws_ecs_task_definition" "messageapp" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.messageapp.arn
+  task_role_arn            = aws_iam_role.task_role.arn
 
   cpu = "256"    # Adjust based on your application's requirements
   memory = "512" # Adjust based on your application's requirements
@@ -53,7 +63,20 @@ resource "aws_ecs_task_definition" "messageapp" {
   ]
   DEFINITION
 }
+resource "aws_iam_role" "task_role" {
+  name = "ecs-task-role"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
 resource "aws_iam_role" "messageapp" {
   name = "messageapp-task-execution-role"
   assume_role_policy = jsonencode({
@@ -118,6 +141,43 @@ resource "aws_ecs_service" "messageapp" {
 }
 
 
+
+resource "aws_lb_listener" "messageapp" {
+  load_balancer_arn = aws_lb.messageapp.arn
+  port             = 80
+  protocol         = "HTTP"
+
+  default_action {
+    type             = "fixed-response"
+    fixed_response_type = "200"
+  }
+}
+
+resource "aws_lb_target_group" "messageapp" {
+  name     = "my-target-group"
+  port     = 8080
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.messageapp.id
+}
+
+resource "aws_lb_listener_rule" "messageapp" {
+  listener_arn = aws_lb_listener.messageapp.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.messageapp.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
+}
+
+output "load_balancer_dns_name" {
+  value = aws_lb.messageapp.dns_name
+}
 
 
 
