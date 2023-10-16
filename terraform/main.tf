@@ -154,19 +154,6 @@ resource "aws_autoscaling_group" "messageapp" {
   availability_zones = ["eu-north-1a"]
 }
 
-  iam_instance_profile {
-    name = "messageapp-iam-instance-profile"
-  }
-  network_interfaces {
-    associate_public_ip_address = true
-  }
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "messageapp-instance"
-    }
-  }
-}
 
 resource "aws_lb_target_group" "messageapp" {
   name     = "messageapp-lb-target-group"
