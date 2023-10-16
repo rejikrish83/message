@@ -55,7 +55,7 @@ resource "aws_ecs_task_definition" "messageapp" {
     {
       "name": "messageapp-container",
       "image": "470502905291.dkr.ecr.eu-north-1.amazonaws.com/message-app:latest",
-      "memory": 1024
+      "memory": 1024,
       "cpu": 512,
       "essential": true,
       "portMappings": [
