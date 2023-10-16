@@ -105,17 +105,6 @@ resource "aws_iam_policy" "messageapp" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "messageapp" {
-  policy_arn = aws_iam_policy.messageapp.arn
-  role       = aws_iam_role.messageapp.name
-}
-
-resource "aws_iam_instance_profile" "messageapp" {
-  name = "messageapp-instance-profile"
-
-  role = aws_iam_role.messageapp.name
-}
-
 resource "aws_ecs_service" "messageapp" {
   name            = "messageapp-service"
   cluster         = aws_ecs_cluster.messageapp.id
@@ -129,36 +118,7 @@ resource "aws_ecs_service" "messageapp" {
 }
 
 
-resource "aws_ecs_capacity_provider" "messageapp" {
-  name = "messageapp-capacity-provider"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.messageapp.arn
-    managed_scaling {
-      target_capacity = 70
-      minimum_scaling_step_size = 1
-      maximum_scaling_step_size = 10
-      instance_warmup_period = 60
-    }
-  }
-  tags = {
-    Environment = "Production"
-  }
-}
-
-resource "aws_autoscaling_group" "messageapp" {
-  name = "messageapp-autoscaling-group"
-  min_size = 2
-  max_size = 10
-  desired_capacity = 4
-  target_group_arns = [aws_lb_target_group.messageapp.arn]
-  availability_zones = ["eu-north-1a"]
-}
 
 
-resource "aws_lb_target_group" "messageapp" {
-  name     = "messageapp-lb-target-group"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.messageapp.id
-}
+
 
