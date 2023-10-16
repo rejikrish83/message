@@ -47,8 +47,7 @@ resource "aws_ecs_task_definition" "messageapp" {
   execution_role_arn       = aws_iam_role.messageapp.arn
   task_role_arn            = aws_iam_role.task_role.arn
 
-  cpu = "256"    # Adjust based on your application's requirements
-  memory = "512" # Adjust based on your application's requirements
+  
 
   container_definitions = <<DEFINITION
   [
