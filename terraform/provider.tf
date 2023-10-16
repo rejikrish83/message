@@ -3,9 +3,10 @@ provider "aws" {
 }
 terraform {
   # Terraform back-end configuration
-  backend "s3" {
+  	backend "s3" {
+  	bucket         = "messageappbucket"
     encrypt        = true
-    key            = "message-contactus/terraform.tfstate"
+    key            = "messageappbucket/terraform.tfstate"
     region         = "eu-north-1	"
     dynamodb_table = "messagingApp"
   }
