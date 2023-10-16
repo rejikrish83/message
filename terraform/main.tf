@@ -4,16 +4,15 @@ resource "aws_vpc" "messageapp" {
 }
 
 resource "aws_subnet" "messageapp" {
-  vpc_id            = aws_vpc.messageapp.id
-  cidr_block        = "10.1.1.0/24"
-  availability_zone = "eu-north-1a"
+
+  
+  count                   = 2
+  vpc_id                  = aws_vpc.messageapp.id
+  cidr_block              = element(["10.1.1.0/24", "10.1.2.0/24"], count.index)
+  availability_zone       = element(["eu-north-1a", "eu-north-1b"], count.index)
+  map_public_ip_on_launch = true
 }
 
-resource "aws_subnet" "messageapp" {
-  vpc_id            = aws_vpc.messageapp.id
-  cidr_block        = "10.1.2.0/24"
-  availability_zone = "eu-north-1b"
-}
 
 resource "aws_security_group" "messageapp" {
   name_prefix = "messageapp-"
