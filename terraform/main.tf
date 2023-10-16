@@ -147,10 +147,6 @@ resource "aws_ecs_capacity_provider" "messageapp" {
 
 resource "aws_autoscaling_group" "messageapp" {
   name = "messageapp-autoscaling-group"
-  launch_template {
-    id = aws_launch_template.messageapp.id
-    version = "$Latest"
-  }
   min_size = 2
   max_size = 10
   desired_capacity = 4
@@ -158,15 +154,6 @@ resource "aws_autoscaling_group" "messageapp" {
   availability_zones = ["eu-north-1a"]
 }
 
-resource "aws_launch_template" "messageapp" {
-  name_prefix = "messageapp-launch-template"
-  block_device_mappings {
-    device_name = "/dev/xvda"
-    ebs {
-      volume_size = 30
-      volume_type = "gp2"
-    }
-  }
   iam_instance_profile {
     name = "messageapp-iam-instance-profile"
   }
