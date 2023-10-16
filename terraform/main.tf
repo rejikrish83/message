@@ -9,6 +9,12 @@ resource "aws_subnet" "messageapp" {
   availability_zone = "eu-north-1a"
 }
 
+resource "aws_subnet" "messageapp" {
+  vpc_id            = aws_vpc.messageapp.id
+  cidr_block        = "10.1.2.0/24"
+  availability_zone = "eu-north-1b"
+}
+
 resource "aws_security_group" "messageapp" {
   name_prefix = "messageapp-"
   description = "Allow incoming traffic"
