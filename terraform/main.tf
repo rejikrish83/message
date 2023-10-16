@@ -196,4 +196,12 @@ resource "aws_lb" "messageapp" {
   load_balancer_type = "application"
   subnets            = aws_subnet.messageapp[*].id
 }
+resource "aws_internet_gateway" "messageapp" {
+  vpc_id = aws_vpc.messageapp.id
+}
 
+resource "aws_route" "route_to_internet" {
+  route_table_id         = aws_subnet.public_subnet.route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.messageapp.id
+}
