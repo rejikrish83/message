@@ -1,12 +1,11 @@
 
 resource "aws_vpc" "messageapp" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = "10.1.0.0/16"
 }
 
 resource "aws_subnet" "messageapp" {
-  count             = 2
   vpc_id            = aws_vpc.messageapp.id
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = "10.1.1.0/24"
   availability_zone = "eu-north-1a"
 }
 
@@ -156,7 +155,7 @@ resource "aws_autoscaling_group" "messageapp" {
   max_size = 10
   desired_capacity = 4
   target_group_arns = [aws_lb_target_group.messageapp.arn]
-  availability_zones = ["eu-north-1a", "eu-north-1b"]
+  availability_zones = ["eu-north-1a"]
 }
 
 resource "aws_launch_template" "messageapp" {
