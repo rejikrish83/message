@@ -180,5 +180,10 @@ output "load_balancer_dns_name" {
 }
 
 
-
+resource "aws_lb" "messageapp" {
+  name               = "messageapp"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = aws_subnet.messageapp[*].id
+}
 
