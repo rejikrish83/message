@@ -205,3 +205,9 @@ resource "aws_route" "route_to_internet" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.messageapp.id
 }
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = aws_vpc.messageapp.id
+  cidr_block              = "10.1.3.0/24"
+  availability_zone       = "eu-north-1a"
+  map_public_ip_on_launch = true
+}
