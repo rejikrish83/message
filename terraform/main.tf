@@ -129,17 +129,6 @@ resource "aws_ecs_service" "messageapp" {
   depends_on      = [aws_ecs_task_definition.messageapp]
 }
 
-resource "aws_ecs_capacity_provider" "messageapp" {
-  name              = "messageapp-capacity-provider"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.messageapp.arn
-    managed_termination_protection = "DISABLED"
-  }
-  enable_ecs_managed_tags = true
-  tags = {
-    Name = "messageapp-capacity-provider"
-  }
-}
 
 resource "aws_ecs_capacity_provider" "messageapp" {
   name = "messageapp-capacity-provider"
