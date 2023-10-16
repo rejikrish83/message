@@ -211,3 +211,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone       = "eu-north-1a"
   map_public_ip_on_launch = true
 }
+
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.messageapp.id
+}
