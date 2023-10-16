@@ -6,7 +6,7 @@ resource "aws_vpc" "messageapp" {
 resource "aws_subnet" "messageapp" {
   count             = 2
   vpc_id            = aws_vpc.messageapp.id
-  cidr_block        = "10.0.1.${count.index * 15}/24"
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "eu-north-1"
 }
 
