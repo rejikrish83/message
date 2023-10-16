@@ -7,7 +7,7 @@ resource "aws_subnet" "messageapp" {
   count             = 2
   vpc_id            = aws_vpc.messageapp.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "eu-north-1"
+  availability_zone = "eu-north-1a"
 }
 
 resource "aws_security_group" "messageapp" {
