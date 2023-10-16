@@ -149,7 +149,12 @@ resource "aws_lb_listener" "messageapp" {
 
   default_action {
     type             = "fixed-response"
-    fixed_response_type = "200"
+
+    fixed_response {
+      content_type = "text/plain"
+      status_code  = "200"
+      message_body = "OK"
+    }
   }
 }
 
