@@ -57,6 +57,18 @@ resource "aws_ecs_task_definition" "messageapp" {
 
 resource "aws_iam_role" "messageapp" {
   name = "messageapp-task-execution-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
 
 resource "aws_iam_policy" "messageapp" {
@@ -128,3 +140,63 @@ resource "aws_ecs_capacity_provider" "messageapp" {
     Name = "messageapp-capacity-provider"
   }
 }
+
+resource "aws_ecs_capacity_provider" "messageapp" {
+  name = "messageapp-capacity-provider"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.messageapp.arn
+    managed_scaling {
+      target_capacity = 70
+      minimum_scaling_step_size = 1
+      maximum_scaling_step_size = 10
+      instance_warmup_period = 60
+    }
+  }
+  tags = {
+    Environment = "Production"
+  }
+}
+
+resource "aws_autoscaling_group" "messageapp" {
+  name = "messageapp-autoscaling-group"
+  launch_template {
+    id = aws_launch_template.messageapp.id
+    version = "$Latest"
+  }
+  min_size = 2
+  max_size = 10
+  desired_capacity = 4
+  target_group_arns = [aws_lb_target_group.messageapp.arn]
+  availability_zones = ["eu-north-1a", "eu-north-1b"]
+}
+
+resource "aws_launch_template" "messageapp" {
+  name_prefix = "messageapp-launch-template"
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 30
+      volume_type = "gp2"
+    }
+  }
+  iam_instance_profile {
+    name = "messageapp-iam-instance-profile"
+  }
+  network_interfaces {
+    associate_public_ip_address = true
+  }
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "messageapp-instance"
+    }
+  }
+}
+
+resource "aws_lb_target_group" "messageapp" {
+  name     = "messageapp-lb-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.messageapp.id
+}
+
