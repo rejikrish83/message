@@ -88,20 +88,11 @@ resource "aws_iam_role" "messageapp" {
     Version = "2012-10-17",
     Statement = [
       {
-        
+        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
-        },
-        
-         "Action": [
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:GetRepositoryPolicy",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetObject",
-                "ecr:BatchGetImage",
-                "ecr:GetAuthorizationToken"
-            ]
+        }
       }
     ]
   })
