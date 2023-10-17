@@ -25,6 +25,8 @@ jobs:
           echo 'spring.application.name=$APPNAME' >> src/main/resources/application.properties
           echo 'contactUsTable=$CONTACTUSTABLE' >> src/main/resources/application.properties
           echo 'contactustopicArn=$CONTACTUSTOPICARN' >> src/main/resources/application.properties
+      - name: Print File Contents
+        run: cat src/main/resources/application.properties
       - name: Set up java 17
         uses: actions/setup-java@v3
         with:
