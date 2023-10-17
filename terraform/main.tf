@@ -13,17 +13,7 @@ resource "aws_security_group_rule" "messageapp_ingress_alb" {
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = aws_security_group.messageapp.id
 }
-resource "aws_security_group_rule" "messageapp_egress_alb" {
-  type = "egress"
 
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-
-  cidr_blocks = ["0.0.0.0/0"]
-  description = "allows ECS task to make egress calls"
-  security_group_id = aws_security_group.messageapp.id
-}
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/messageapp/app"
   retention_in_days = 3
