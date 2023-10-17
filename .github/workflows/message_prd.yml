@@ -19,14 +19,14 @@ jobs:
         
       - name: Generate application.properties
         run: |
-          echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application.properties
-          echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application.properties
-          echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application.properties
-          echo 'spring.application.name=message' >> src/main/resources/application.properties
-          echo 'contactUsTable=${ssm:/config/message-develop/contactusTable}' >> src/main/resources/application.properties
-          echo 'contactustopicArn=${ssm:/config/message_develop/contactustopic-arn}' >> src/main/resources/application.properties
+          echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application_dev.properties
+          echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application_dev.properties
+          echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application_dev.properties
+          echo 'spring.application.name=message' >> src/main/resources/application_dev.properties
+          echo 'contactUsTable=${ssm:/config/message-develop/contactusTable}' >> src/main/resources/application_dev.properties
+          echo 'contactustopicArn=${ssm:/config/message_develop/contactustopic-arn}' >> src/main/resources/application_dev.properties
       - name: Print File Contents
-        run: cat src/main/resources/application.properties
+        run: cat src/main/resources/application_dev.properties
       - name: Set up java 17
         uses: actions/setup-java@v3
         with:

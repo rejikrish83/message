@@ -11,4 +11,4 @@ COPY target/message-1.jar message.jar
 EXPOSE 8080
 
 # Run the application when the container launches
-CMD ["java", "-jar", "message.jar"]
+CMD ["java", "-jar", "message.jar", "--spring.profiles.active=dev"]
