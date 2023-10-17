@@ -52,20 +52,7 @@ resource "aws_ecs_task_definition" "messageapp" {
           "containerPort": 8080,
           "hostPort": 8080
         }
-      ],
-      "environment": [
-      {
-        "name": "Message APP",
-        "value": "Dev"
-      }
-    ],
-      "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "/messageapp/messageapp",
-        "awslogs-region": "eu-north-1",
-        "awslogs-stream-prefix": "messageapp-ecs"
-      }
+      ]
     }
   ]
   DEFINITION
