@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "messageapp" {
   [
     {
       "name": "messageapp-container",
-      "image": "470502905291.dkr.ecr.eu-north-1.amazonaws.com/message-app-repo",
+      "image": "public.ecr.aws/f2n4w0f7/message-app-image",
       "memory": 1024,
       "cpu": 512,
       "essential": true,
