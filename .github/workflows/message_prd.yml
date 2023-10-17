@@ -22,9 +22,9 @@ jobs:
           echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application.properties
           echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application.properties
           echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application.properties
-          echo 'spring.application.name=$APPNAME' >> src/main/resources/application.properties
-          echo 'contactUsTable=$CONTACTUSTABLE' >> src/main/resources/application.properties
-          echo 'contactustopicArn=$CONTACTUSTOPICARN' >> src/main/resources/application.properties
+          echo 'spring.application.name=${{env.APPNAME}}' >> src/main/resources/application.properties
+          echo 'contactUsTable=${{env.CONTACTUSTABLE}}' >> src/main/resources/application.properties
+          echo 'contactustopicArn=${{env.CONTACTUSTOPICARN}}' >> src/main/resources/application.properties
       - name: Print File Contents
         run: cat src/main/resources/application.properties
       - name: Set up java 17
