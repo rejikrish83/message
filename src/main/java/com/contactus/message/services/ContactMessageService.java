@@ -48,14 +48,14 @@ public class ContactMessageService {
         itemValues.put("message", AttributeValue.builder().s(message.getMessage()).build());
 
         dynamoDbClient.putItem(PutItemRequest.builder()
-                .tableName(ssmPara.getSSMParameter(contactTableName))
+                .tableName(contactTableName)
                 .item(itemValues)
                 .build());
     }
 
     public ContactMessage getContactMessage(String email) {
         GetItemResponse response = dynamoDbClient.getItem(GetItemRequest.builder()
-                .tableName(ssmPara.getSSMParameter(contactTableName))
+                .tableName(contactTableName)
                 .key(Collections.unmodifiableMap(new HashMap<String, AttributeValue>() {{put("email", AttributeValue.builder().s(email).build());}}))
                 .build());
 
@@ -78,7 +78,7 @@ public class ContactMessageService {
         }});
 
         dynamoDbClient.updateItem(UpdateItemRequest.builder()
-                .tableName(ssmPara.getSSMParameter(contactTableName))
+                .tableName(contactTableName)
                 .key(itemKey)
                 .attributeUpdates(updates)
                 .build());
@@ -86,7 +86,7 @@ public class ContactMessageService {
 
     public void deleteContactMessage(String email) {
         dynamoDbClient.deleteItem(DeleteItemRequest.builder()
-                .tableName(ssmPara.getSSMParameter(contactTableName))
+                .tableName(contactTableName)
                 .key(Collections.unmodifiableMap(new HashMap<String, AttributeValue>() {{put("email", AttributeValue.builder().s(email).build());}}))
                 .build());
     }

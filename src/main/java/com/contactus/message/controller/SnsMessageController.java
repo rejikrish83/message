@@ -26,8 +26,9 @@ public class SnsMessageController {
     }
 
     @PostMapping("/publish")
-    public void publishMessage(@RequestBody String message) {
-        snsService.publishMessageToTopic(ssmPara.getSSMParameter(contactustopicArn), message);
+    public ResponseEntity<String>  publishMessage(@RequestBody String message) {
+        snsService.publishMessageToTopic(contactustopicArn, message);
+        return ResponseEntity.ok("Message published to the sns topic");
     }
     
     @GetMapping("/")
