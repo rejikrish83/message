@@ -1,5 +1,5 @@
 resource "aws_alb_target_group" "messageapp" {
-  name        = "messageapp aws_alb_target_group"
+  name        = "messageappawsalbtargetgroup"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.messageapp.id
@@ -9,7 +9,7 @@ resource "aws_alb_target_group" "messageapp" {
 }
 
 resource "aws_alb" "messageapp" {
-  name            = "messageapp aws_alb"
+  name            = "messageappawsalb"
   subnets         = aws_subnet.messageapp.*.id
   security_groups = [aws_security_group.alb.id]
 }
