@@ -70,6 +70,9 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = var.ecs_task_execution_role_name
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # ECS task execution role policy attachment
@@ -134,6 +137,9 @@ resource "aws_alb" "main" {
   name            = "cb-load-balancer"
   subnets         = aws_subnet.public.*.id
   security_groups = [aws_security_group.lb.id]
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_alb_target_group" "app" {
@@ -151,6 +157,9 @@ resource "aws_alb_target_group" "app" {
     timeout             = "3"
     path                = var.health_check_path
     unhealthy_threshold = "2"
+  }
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -309,6 +318,9 @@ resource "aws_cloudwatch_log_group" "cb_log_group" {
 
   tags = {
     Name = "cb-log-group"
+  }
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
