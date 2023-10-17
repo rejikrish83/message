@@ -23,6 +23,6 @@ public class MessageController {
 	private SSMParameterService ssmPara; 
 	 @GetMapping()
 	    public String retrieveAllStudents() {
-	        return "hello welcome"+ssmPara.getSSMParameter(contactTableName);
+	        return "hello welcome";
 	    }
 }
