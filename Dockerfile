@@ -1,5 +1,5 @@
 # Use an official OpenJDK runtime as a parent image
-FROM adoptopenjdk:17-jre-hotspot-bionic
+FROM openjdk:17-oracle
 
 # Set the working directory in the container
 WORKDIR /app
