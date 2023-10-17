@@ -31,8 +31,9 @@ public class ContactMessageService {
     @Value("${contactUsTable}")
 	private String contactTableName;
 	
-	@Autowired
-	private SSMParameterService ssmPara;
+	/*
+	 * @Autowired private SSMParameterService ssmPara;
+	 */
 	
     @Autowired
 	public ContactMessageService(
