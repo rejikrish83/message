@@ -69,13 +69,7 @@ jobs:
       - name: Terraform Plan
         working-directory: .
         run: terraform plan
-      - name: Terraform Refresh
-        working-directory: .
-        run: terraform refresh
-        
-      - name: Destroy Existing Log Group
-        working-directory: .
-        run: terraform destroy -target=aws_cloudwatch_log_group.cb_log_group -target=aws_eip.gw -target=aws_iam_role.ecs_task_execution_role -target=aws_alb.main -target=aws_alb_target_group.app -target=aws_vpc.main
+      
       - name: Terraform Apply
         working-directory: .
         run: terraform apply -auto-approve
