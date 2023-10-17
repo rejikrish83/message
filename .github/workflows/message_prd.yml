@@ -69,6 +69,10 @@ jobs:
       - name: Terraform Plan
         working-directory: .
         run: terraform plan
+        
+      - name: Terraform Plan
+        working-directory: .
+        run: terraform refresh
       
       - name: Terraform Apply
         working-directory: .
