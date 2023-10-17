@@ -1,43 +1,31 @@
 
-resource "aws_vpc" "messageapp" {
-  cidr_block = "10.1.0.0/16"
-}
-
-resource "aws_subnet" "messageapp" {
-
-  
-  count                   = 2
-  vpc_id                  = aws_vpc.messageapp.id
-  cidr_block              = element(["10.1.1.0/24", "10.1.2.0/24"], count.index)
-  availability_zone       = element(["eu-north-1a", "eu-north-1b"], count.index)
-  map_public_ip_on_launch = true
-}
-
-
 resource "aws_security_group" "messageapp" {
   name_prefix = "messageapp-"
   description = "Allow incoming traffic"
   vpc_id      = aws_vpc.messageapp.id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
-resource "aws_security_group_rule" "messageapp" {
+resource "aws_security_group_rule" "messageapp_ingress_alb" {
   type        = "ingress"
   from_port   = 8080
   to_port     = 8080
   protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
   security_group_id = aws_security_group.messageapp.id
 }
+resource "aws_security_group_rule" "messageapp_ingress_alb" {
+  type = "egress"
 
-resource "aws_ecs_cluster" "messageapp" {
-  name = "messageapp-cluster"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+
+  cidr_blocks = ["0.0.0.0/0"]
+  description = "allows ECS task to make egress calls"
+  security_group_id = aws_security_group.messageapp.id
+}
+resource "aws_cloudwatch_log_group" "app" {
+  name              = "/messageapp/app"
+  retention_in_days = 3
 }
 
 resource "aws_ecs_task_definition" "messageapp" {
@@ -45,7 +33,7 @@ resource "aws_ecs_task_definition" "messageapp" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.messageapp.arn
-  task_role_arn            = aws_iam_role.task_role.arn
+  
 
   cpu = "1024"    # Adjust based on your application's requirements
   memory = "2048" # Adjust based on your application's requirements
@@ -63,75 +51,19 @@ resource "aws_ecs_task_definition" "messageapp" {
           "containerPort": 8080,
           "hostPort": 8080
         }
-      ]
+      ],
+      "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/messageapp/messageapp",
+        "awslogs-region": "eu-north-1",
+        "awslogs-stream-prefix": "messageapp-ecs"
+      }
     }
   ]
   DEFINITION
 }
-resource "aws_iam_role" "task_role" {
-  name = "ecs-task-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "ecs-tasks.amazonaws.com"
-      }
-    }]
-  })
-}
-resource "aws_iam_role" "messageapp" {
-  name = "messageapp-task-execution-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy" "messageapp" {
-  name = "messageapp-task-policy"
-
-  description = "messageapp Task Policy"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecs:CreateCluster",
-        "ecs:DeregisterContainerInstance",
-        "ecs:DiscoverPollEndpoint",
-        "ecs:Poll",
-        "ecs:RegisterContainerInstance",
-        "ecs:StartTelemetrySession",
-        "ecs:Submit*",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetAuthorizationToken",
-        "ecr:GetRegistryCatalogData",
-        "ecr:GetRepositoryPolicy",
-        "ecr:DescribeRepositories",
-        "ecr:ListImages",
-        "ecr:GetDownloadUrlForLayer"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
 
 resource "aws_ecs_service" "messageapp" {
   name            = "messageapp-service"
@@ -143,76 +75,36 @@ resource "aws_ecs_service" "messageapp" {
     subnets = aws_subnet.messageapp[*].id
     security_groups = [aws_security_group.messageapp.id]
   }
-  depends_on      = [aws_ecs_task_definition.messageapp]
+  depends_on      = [aws_alb.messageapp]
+  health_check_grace_period_seconds = 300
+  load_balancer {
+    target_group_arn = aws_alb_target_group.messageapp.arn
+    container_name   = "messageapp-container"
+    container_port   = 8080
+  }
 }
 
+resource "aws_appautoscaling_target" "messageapp" {
+  max_capacity       = 3
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.messageapp.name}/${aws_ecs_service.messageapp.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
 
+resource "aws_appautoscaling_policy" "messageapp" {
+  name               = "app"
+  resource_id        = aws_appautoscaling_target.messageapp.resource_id
+  scalable_dimension = aws_appautoscaling_target.messageapp.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.messageapp.service_namespace
 
-resource "aws_lb_listener" "messageapp" {
-  load_balancer_arn = aws_lb.messageapp.arn
-  port             = 80
-  protocol         = "HTTP"
+  policy_type = "TargetTrackingScaling"
+  target_tracking_scaling_policy_configuration {
+    target_value = 25
 
-  default_action {
-    type             = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      status_code  = "200"
-      message_body = "OK"
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label = "${aws_alb.messageapp.arn_suffix}/${aws_alb_target_group.messageapp.arn_suffix}"
     }
   }
-}
-
-resource "aws_lb_target_group" "messageapp" {
-  name     = "my-target-group"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.messageapp.id
-}
-
-resource "aws_lb_listener_rule" "messageapp" {
-  listener_arn = aws_lb_listener.messageapp.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.messageapp.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/"]
-    }
-  }
-}
-
-output "load_balancer_dns_name" {
-  value = aws_lb.messageapp.dns_name
-}
-
-
-resource "aws_lb" "messageapp" {
-  name               = "messageapp"
-  internal           = false
-  load_balancer_type = "application"
-  subnets            = aws_subnet.messageapp[*].id
-}
-resource "aws_internet_gateway" "messageapp" {
-  vpc_id = aws_vpc.messageapp.id
-}
-
-resource "aws_route" "route_to_internet" {
-  route_table_id         = aws_route_table.public_route_table.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.messageapp.id
-}
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.messageapp.id
-  cidr_block              = "10.1.3.0/24"
-  availability_zone       = "eu-north-1a"
-  map_public_ip_on_launch = true
-}
-
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.messageapp.id
 }
