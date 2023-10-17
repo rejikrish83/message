@@ -23,8 +23,8 @@ jobs:
           echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application-dev.properties
           echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application-dev.properties
           echo 'spring.application.name=message' >> src/main/resources/application-dev.properties
-          echo 'contactUsTable=${ssm:/config/message-develop/contactusTable}' >> src/main/resources/application-dev.properties
-          echo 'contactustopicArn=${ssm:/config/message_develop/contactustopic-arn}' >> src/main/resources/application-dev.properties
+          echo 'contactUsTable=customer_message' >> src/main/resources/application-dev.properties
+          echo 'contactustopicArn=arn:aws:sns:eu-north-1:470502905291:contactustopic' >> src/main/resources/application-dev.properties
       - name: Print application-dev.properties
         run: cat src/main/resources/application-dev.properties
       
