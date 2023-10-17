@@ -12,7 +12,7 @@ resource "aws_security_group_rule" "messageapp_ingress_alb" {
   protocol    = "tcp"
   security_group_id = aws_security_group.messageapp.id
 }
-resource "aws_security_group_rule" "messageapp_ingress_alb" {
+resource "aws_security_group_rule" "messageapp_egress_alb" {
   type = "egress"
 
   from_port   = 0
