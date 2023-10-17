@@ -29,7 +29,7 @@ variable "ecs_task_execution_role_name" {
 
 variable "az_count" {
   description = "Number of AZs to cover in a given region"
-  default     = "2"
+  default     = "3"
 }
 
 variable "app_image" {
