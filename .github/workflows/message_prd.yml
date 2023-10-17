@@ -17,7 +17,7 @@ jobs:
       - name: Run a one-line script
         uses: actions/checkout@v3
         
-      - name: Generate application.properties
+      - name: Generate application_dev.properties
         run: |
           echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application-dev.properties
           echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application-dev.properties
@@ -25,16 +25,19 @@ jobs:
           echo 'spring.application.name=message' >> src/main/resources/application-dev.properties
           echo 'contactUsTable=${ssm:/config/message-develop/contactusTable}' >> src/main/resources/application-dev.properties
           echo 'contactustopicArn=${ssm:/config/message_develop/contactustopic-arn}' >> src/main/resources/application-dev.properties
-          
+      - name: Print application-dev.properties
+        run: cat src/main/resources/application-dev.properties
+        
+      - name: Generate application.properties
+        run: |
           echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application.properties
           echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application.properties
           echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application.properties
           echo 'spring.application.name=message' >> src/main/resources/application.properties
           echo 'contactUsTable=${ssm:/config/message-develop/contactusTable}' >> src/main/resources/application.properties
           echo 'contactustopicArn=${ssm:/config/message_develop/contactustopic-arn}' >> src/main/resources/application.properties
-      - name: Print File Contents
-        run: cat src/main/resources/application-dev.properties
-      - name: Print File Contents
+      
+      - name: Print application.properties
         run: cat src/main/resources/application.properties
       - name: Set up java 17
         uses: actions/setup-java@v3
