@@ -25,6 +25,15 @@ jobs:
           echo 'spring.application.name=message' >> src/main/resources/application-dev.properties
           echo 'contactUsTable=customer_message' >> src/main/resources/application-dev.properties
           echo 'contactustopicArn=arn:aws:sns:eu-north-1:470502905291:contactustopic' >> src/main/resources/application-dev.properties
+          
+      - name: Generate application_dev.properties
+        run: |
+          echo 'aws.accessKeyId==${{ secrets.ACCESSKEYID }}' >> src/main/resources/application.properties
+          echo 'aws.secretAccessKey=${{ secrets.SECRETACCESSKEY }}' >> src/main/resources/application.properties
+          echo 'aws.region=${{ secrets.REGION }}' >> src/main/resources/application.properties
+          echo 'spring.application.name=message' >> src/main/resources/application.properties
+          echo 'contactUsTable=customer_message' >> src/main/resources/application.properties
+          echo 'contactustopicArn=arn:aws:sns:eu-north-1:470502905291:contactustopic' >> src/main/resources/application.properties
       - name: Print application-dev.properties
         run: cat src/main/resources/application-dev.properties
       
