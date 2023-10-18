@@ -9,8 +9,7 @@ WORKDIR /app
 
 # Copy the JAR file into the container at the working directory
 COPY target/message-1.jar message.jar
-RUN apt-get update
-RUN apt-get install -y add aws-cli
+RUN apk update && apk add aws-cli
 
 # Add your AWS CLI configuration (access key, secret key, region)
 RUN aws configure set aws_access_key_id ACCESS_KEY
